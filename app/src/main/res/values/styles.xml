@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Простейшая тема, основанная на Android DeviceDefault, чтобы не требовать дополнительных библиотек -->
+    <style name="Theme.MicroAI" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:colorBackground">@color/white</item>
+    </style>
+</resources>

@@ -1,4 +1,4 @@
-﻿pluginManagement {
+pluginManagement {
     repositories {
         google()
         mavenCentral()
@@ -13,5 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "MicroAI"
-include(":app")
 include(":app")

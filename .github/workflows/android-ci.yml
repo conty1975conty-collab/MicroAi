@@ -1,0 +1,56 @@
+  - name: Set up JDK
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: ${{ env.JAVA_VERSION }}
+
+  - name: Cache Gradle
+    uses: actions/cache@v4
+    with:
+      path: |
+        ~/.gradle/caches
+        ~/.gradle/wrapper
+      key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties','**/*.gradle*') }}
+
+  - name: Decode Android keystore (if provided)
+    if: secrets.ANDROID_KEYSTORE != ''
+    run: |
+      echo "$ANDROID_KEYSTORE" | base64 --decode > $HOME/keystore.jks
+      echo "ANDROID_KEYSTORE_PATH=$HOME/keystore.jks" >> $GITHUB_ENV
+    env:
+      ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+
+  - name: Show Gradle wrapper
+    run: ./gradlew -v
+
+  - name: Run unit tests & lint
+    run: ./gradlew clean testDebugUnitTest lint assembleDebug --no-daemon
+
+  - name: Build Release APK (signed if keystore present)
+    run: |
+      if [ -f "$HOME/keystore.jks" ]; then
+        echo "Keystore found, building signed release"
+        ./gradlew assembleRelease --no-daemon
+      else
+        echo "No keystore: building unsigned release (assembleRelease may still run but unsigned)"
+        ./gradlew assembleRelease --no-daemon || true
+      fi
+
+  - name: Run instrumentation tests on emulator (connectedAndroidTest)
+    uses: reactivecircus/android-emulator-runner@v2
+    with:
+      api-level: 31
+      arch: x86_64
+      target: default
+      emulator-options: -no-window -no-audio -gpu swiftshader_indirect
+      script: ./gradlew connectedAndroidTest -PciBuild=true --no-daemon
+
+  - name: Upload APKs and reports
+    uses: actions/upload-artifact@v4
+    with:
+      name: android-artifacts
+      path: |
+        app/build/outputs/**/*.apk
+        app/build/reports/**/*.html
+        app/build/reports/**/*.xml
+        app/build/outputs/**/*mapping.txt

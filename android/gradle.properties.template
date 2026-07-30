@@ -1,0 +1,13 @@
+# Пример gradle.properties — НЕ храните реальные секреты в репозитории.
+# Используйте эти переменные, которые workflow подставит из environment / secrets.
+
+# Keystore (workflow создаст ANDROID_KEYSTORE_PATH env переменную)
+ANDROID_KEYSTORE_PATH=${ANDROID_KEYSTORE_PATH}
+
+# Keystore passwords — передать через secrets (см. README ниже)
+RELEASE_STORE_PASSWORD=${ANDROID_KEYSTORE_PASSWORD}
+RELEASE_KEY_ALIAS=${ANDROID_KEY_ALIAS}
+RELEASE_KEY_PASSWORD=${ANDROID_KEY_PASSWORD}
+
+# Доп. опции
+org.gradle.jvmargs=-Xmx2048m

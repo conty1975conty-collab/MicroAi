@@ -19,11 +19,13 @@ android {
     // Signing configuration for release builds — values come from environment variables
     signingConfigs {
         create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH") ?: "keystore.jks"
+            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+                ?.takeIf { it.isNotBlank() }
+                ?: "${System.getProperty("user.home")}/keystore.jks"
             storeFile = file(keystorePath)
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: ""
+            keyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
         }
     }
 
